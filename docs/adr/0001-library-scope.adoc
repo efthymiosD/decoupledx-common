@@ -1,0 +1,33 @@
+# ADR-0001 — Library scope and application boundaries
+
+Status: Accepted · Date: 2026-11-04
+
+## Context
+
+Two sibling applications (Reservation System, Team Management) duplicated the
+same stable infrastructure seams. A shared library avoids drift but risks
+growing into a generic junk drawer that couples unrelated lifecycles.
+
+## Decision
+
+1. **Scope**: application-neutral seams only — error contract, domain-event
+   contract + platform seam, transaction port + implementation, JWT/identity
+   machinery, fixed clock, OpenAPI security scheme.
+2. **ErrorCode is a contract interface** here; each application keeps its own
+   enum implementing it (`BusinessException` speaks the contract). This
+   preserves domain ownership of codes while sharing the translation rules.
+3. **Auto-configuration registration** (`AutoConfiguration.imports`), every
+   bean `@ConditionalOnMissingBean`, no component scanning of application
+   packages.
+4. **Stays app-owned**: `SecurityConfig` (routing policy), Testcontainers base
+   specs, `JwtSupport`/`WebUserSupport` (they compile against
+   `spring-security-test` — a main-jar dependency on a test framework is not
+   acceptable), domain models, per-app error enums, `Money`/`ReservationPeriod`.
+5. **Version friction policy**: versions here govern only this library's
+   build; consumers' Boot dependency management always wins at runtime.
+
+## Consequences
+
+- Fixes to shared seams are made once; both apps upgrade deliberately.
+- The URN/base-property defaults keep both apps' existing ProblemDetail and
+  config keys working (only the OpenAPI title becomes a property).

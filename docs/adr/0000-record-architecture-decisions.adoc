@@ -1,0 +1,8 @@
+# ADR-0000 — Record architecture decisions
+
+Status: Accepted · Date: 2026-11-04
+
+## Decision
+
+Use lightweight ADRs (`NNNN-title.adoc`, status/context/decision/consequences)
+in this directory. See ADR-0001 for the library scope decision.

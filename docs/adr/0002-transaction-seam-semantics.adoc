@@ -1,0 +1,34 @@
+# ADR-0002 — Transaction seam semantics: exceptions crossing run() roll back
+
+Status: Accepted · Date: 2026-11-04
+
+## Context
+
+The copied `SpringTransactionRunner` built its write template from a
+`RuleBasedTransactionAttribute` carrying a `NoRollbackRuleAttribute
+(DataIntegrityViolationException)`, documented as "DIVE does not roll back so
+persistence adapters can resolve duplicate-key races in the same transaction".
+Verification against Spring 7 bytecode showed `TransactionTemplate
+#rollbackOnException` rolls back **unconditionally** for any application
+exception; the `TransactionTemplate(pm, definition)` constructor copies only
+propagation/isolation/readOnly/timeout — rollback rules are inert.
+
+## Decision
+
+1. The seam keeps `TransactionTemplate` and its **actual** semantics: an
+   exception crossing `run(...)` always rolls back and is rethrown.
+2. The inert `NoRollbackRule` construction is removed; the constraint-race
+   convention is stated explicitly instead: **persistence adapters resolve
+   constraint races INSIDE the work** (catch the
+   `DataIntegrityViolationException` at save/flush, recover — e.g. return the
+   existing row) so the work completes and commits well-formed. Never let a
+   DIVE cross the boundary.
+3. Library specs pin these semantics (rollback on escape, commit when races
+   are resolved inside) so a future Spring change cannot silently alter them.
+
+## Consequences
+
+- Behavior of both consuming applications is unchanged (the rule was inert;
+  race resolution always happened inside the work).
+- The redelivery/catch pattern for duplicate-key races is a documented,
+  spec-pinned library convention rather than folklore.
