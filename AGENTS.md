@@ -40,8 +40,10 @@ seam, JWT machinery, fixed-clock + OpenAPI config, Boot auto-configuration
   `app.common.openapi.title|description|version`.
 - Records in their own top-level files; Spotless (Java) after edits:
   `./mvnw spotless:apply`.
-- Versioning: `0.1.0-SNAPSHOT`; release by dropping the suffix and deploying
-  to GitHub Packages from `main`.
+- Versioning: releases are bullet versions (`0.1.0`, `0.2.0`, …); apps pin a
+  released version in their poms. Release flow: drop `-SNAPSHOT`, verify,
+  commit, push `main` (publish workflow deploys to GitHub Packages), tag
+  `vX.Y.Z`.
 
 ## Known quirks
 

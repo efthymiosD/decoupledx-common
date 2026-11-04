@@ -33,7 +33,7 @@ Apps declare:
 <dependency>
   <groupId>com.decoupledx</groupId>
   <artifactId>decoupledx-common</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 
@@ -45,8 +45,14 @@ source ~/tools/env.sh
 ```
 
 CI resolves from **GitHub Packages** (`maven.pkg.github.com/efthymiosD/decoupledx-common`);
-the publish workflow runs on push to `main`. Java 26, Spring Boot 4.1.1 /
+the publish workflow deploys on push to `main`. Java 26, Spring Boot 4.1.1 /
 Modulith 2.1.1 aligned, tests in Spock (Groovy 5.1).
+
+## Releases
+
+Released versions: **v0.1.0** (first release; both applications consume
+`0.1.0`). Release flow: drop `-SNAPSHOT`, verify, commit, push `main`
+(publish workflow deploys), tag `vX.Y.Z`.
 
 ## Conventions
 
