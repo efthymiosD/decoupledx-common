@@ -45,14 +45,15 @@ source ~/tools/env.sh
 ```
 
 CI resolves from **GitHub Packages** (`maven.pkg.github.com/efthymiosD/decoupledx-common`);
-the publish workflow deploys on push to `main`. Java 26, Spring Boot 4.1.1 /
+the publish workflow deploys **on `v*` tag pushes** (versions are immutable —
+a re-deploy 409s). Main pushes only run CI. Java 26, Spring Boot 4.1.1 /
 Modulith 2.1.1 aligned, tests in Spock (Groovy 5.1).
 
 ## Releases
 
 Released versions: **v0.1.0** (first release; both applications consume
-`0.1.0`). Release flow: drop `-SNAPSHOT`, verify, commit, push `main`
-(publish workflow deploys), tag `vX.Y.Z`.
+`0.1.0`). Release flow: bump the pom version, commit, `tag vX.Y.Z`, push
+`main` + the tag together (the tag triggers the publish workflow).
 
 ## Conventions
 

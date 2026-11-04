@@ -40,10 +40,11 @@ seam, JWT machinery, fixed-clock + OpenAPI config, Boot auto-configuration
   `app.common.openapi.title|description|version`.
 - Records in their own top-level files; Spotless (Java) after edits:
   `./mvnw spotless:apply`.
-- Versioning: releases are bullet versions (`0.1.0`, `0.2.0`, …); apps pin a
-  released version in their poms. Release flow: drop `-SNAPSHOT`, verify,
-  commit, push `main` (publish workflow deploys to GitHub Packages), tag
-  `vX.Y.Z`.
+- Versioning: releases are pinned versions (`0.1.0`, `0.2.0`, …) — immutable on
+  GitHub Packages. Release flow: bump the pom version, commit, `tag vX.Y.Z`,
+  then `git push origin main vX.Y.Z` (the tag push triggers the publish
+  workflow; the tag name must match the pom version). Docs-only main pushes
+  never re-deploy.
 
 ## Known quirks
 

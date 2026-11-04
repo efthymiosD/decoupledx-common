@@ -2,12 +2,19 @@ name: Publish
 
 on:
   push:
-    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: read
   packages: write
 
+# Deploys the checked-out version (the tag name must match the pom version).
+# Releases are immutable on GitHub Packages: re-deploying the same version
+# fails with HTTP 409 — this is the guard, not an error. Flow:
+#   bump version -> commit -> tag vX.Y.Z -> git push origin main vX.Y.Z
+# Main-branch pushes only ever verify (ci.yml); docs-only pushes never
+# re-deploy an already-released version.
 jobs:
   publish:
     name: verify + deploy to GitHub Packages
