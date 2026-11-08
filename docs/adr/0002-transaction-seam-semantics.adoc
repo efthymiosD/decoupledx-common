@@ -26,6 +26,24 @@ propagation/isolation/readOnly/timeout — rollback rules are inert.
 3. Library specs pin these semantics (rollback on escape, commit when races
    are resolved inside) so a future Spring change cannot silently alter them.
 
+### Supplement (2026-11-07, proven by the team-management concurrent
+### first-join race spec)
+
+After ANY failed statement inside a PostgreSQL transaction, that transaction
+is DEAD: every further statement fails with "current transaction is aborted".
+Therefore:
+
+4. Race recovery never happens mid-transaction. A persistence adapter either
+   (a) ends the flow with the translated 409 exception, or (b) recovers from
+   its OWN transaction unit — never by re-reading inside the aborted one.
+5. Flows that re-read/recover after a possible constraint race
+   (e.g. auto-provisioning an account/player profile on first use) run
+   OUTSIDE an explicit `TransactionRunner` section: each repository call is
+   its own unit, the unique index is the truth, and the adapter's recovery
+   read opens a fresh unit.
+6. Consumers must not assume `catch (DataIntegrityViolationException)` inside
+   a `tx.run(...)` body can continue the work.
+
 ## Consequences
 
 - Behavior of both consuming applications is unchanged (the rule was inert;
