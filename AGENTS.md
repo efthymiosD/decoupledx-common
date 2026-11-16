@@ -19,7 +19,18 @@ application test scaffolding, or speculative abstractions.
 Bootstrap complete: error contract (ErrorCode interface + BusinessException +
 GlobalExceptionHandler), event contract (ADR-0004 semantics), TransactionRunner
 seam, JWT machinery, fixed-clock + OpenAPI config, Boot auto-configuration
-(all beans @ConditionalOnMissingBean). Spock specs green.
+(all beans @ConditionalOnMissingBean), the one-time token seam
+(ADR-0003, `tokens`: OneTimeTokens + SingleUseTokenLedger, v0.2.0), and the
+web/i18n seams (`i18n`: WebMessages + Countries/Country; `web`: Uploads +
+UploadErrorCode — moved from team-management at owner direction, v0.3.0).
+Spock specs green.
+
+**Owner-directed deviations (2026-11-15):** (a) the token seam was promoted
+at FIRST consumer (team-management) by explicit owner decision — the seam
+standardizes race semantics (not speculative shape), and the second
+consumer (the claim-token migration) ships alongside it; (b) the upload/
+i18n web seams were moved at owner direction with a single consumer.
+Property vocabulary gains `app.uploads.dir`.
 
 ## Conventions
 

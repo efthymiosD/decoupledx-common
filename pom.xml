@@ -6,7 +6,7 @@
 
     <groupId>com.decoupledx</groupId>
     <artifactId>decoupledx-common</artifactId>
-    <version>0.1.0</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
     <name>decoupledx-common</name>
     <description>Shared seams for decoupledx applications: error contract, domain events, transaction boundary, and JWT/identity infrastructure.</description>

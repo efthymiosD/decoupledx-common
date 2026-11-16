@@ -1,0 +1,48 @@
+= ADR-0003: One-time token seam
+
+== Status
+
+Accepted (2026-11-15). Owner-directed promotion at first consumer: the
+guardrail's "2+ applications" rule was waived explicitly — the seam is the
+standardized RACE SEMANTICS, not a speculative abstraction, and the second
+consumer (claim-token migration in team-management) ships alongside it.
+
+== Context
+
+Invitation and claim flows need single-use tokens that arrive as URLs.
+Two requirements dominate every such flow:
+
+* *Security* — raw tokens appear exactly once (in the minted link or the
+  registration response); storage holds hashes only, so a database leak
+  reveals nothing usable. The applications' security checklist already
+  mandates "tokens opaque + only hashes stored".
+* *Honest races* — a parallel first-use must end with exactly one success
+  and honest already-used/unknown client errors, never a 500 and never a
+  silent double-use.
+
+== Decision
+
+`com.decoupledx.common.tokens` provides:
+
+* `OneTimeTokens` — generation (128-bit SecureRandom, unpadded base64url)
+  and SHA-256 hashing. Pure JDK, no Spring.
+* `SingleUseTokenLedger` — the canonical storage contract: implementations
+  persist hashes only and consume with ONE atomic guarded statement
+  (`UPDATE … SET used_at = now() WHERE token_hash = ? AND used_at IS NULL`)
+  in its own unit; the race loser gets `false` and translates it to the
+  application's honest business error. A lost-update race that aborts the
+  Postgres transaction resolves INSIDE the implementing work (ADR-0002).
+
+What stays in the applications: the token's meaning (join a team, claim a
+profile), tables and foreign keys, minting rights, revocation/expiry
+policy, and all UI.
+
+== Consequences
+
+* Applications implement the ledger over their own schema (JPA entity +
+  repository adapter); the library gains no persistence dependency.
+* Known hashes are deterministic (unsalted SHA-256) — acceptable because
+  raw tokens carry 128 bits of entropy; guessing a token from its hash is
+  infeasible.
+* The next application needing single-use tokens adopts the seam without
+  re-deriving the race rules.

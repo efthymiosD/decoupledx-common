@@ -16,6 +16,9 @@ error codes) stays in the applications.
 | `com.decoupledx.common.error` | `ErrorCode` **contract** + `BusinessException` + `GlobalExceptionHandler` (ProblemDetail, URN base configurable via `app.common.problem-urn-base`) |
 | `com.decoupledx.common.event` | Domain-event contract (`DomainEvent`, `DomainEventPublisher`, `DomainEventListener`) + composed annotation `OnDomainEvent` + seam impl `SpringDomainEventPublisher` (Modulith conventions) |
 | `com.decoupledx.common.transaction` | `TransactionRunner` port + `SpringTransactionRunner` (no-rollback on `DataIntegrityViolationException`) |
+| `com.decoupledx.common.i18n` | `WebMessages` (error-code → translated copy via the standard `error.<code>` keys) + `Countries`/`Country` (ISO 3166-1 alpha-2 list, localized names, emoji flags) |
+| `com.decoupledx.common.web` | `Uploads` (type/size-validated image storage under `app.uploads.dir`, UUID file names, hash-free) + `UploadErrorCode` (415/413/500 contract) |
+| `com.decoupledx.common.tokens` | One-time token mechanics: `OneTimeTokens` (128-bit generation, SHA-256 hash-only storage) + `SingleUseTokenLedger` contract (atomic guarded consume; races resolve inside the implementing work per ADR-0002; see ADR-0003) |
 | `com.decoupledx.common.security` | JWT machinery: `JwtDecoderConfig` (+ validators/roles converter), `RealmRoleOidcUserService`, `PromptLoginAuthorizationRequestResolver`, `KeycloakLogoutSuccessHandler` |
 | `com.decoupledx.common.config` | Fixed `Clock` (`app.clock.fixed-instant`), OpenAPI bearer scheme (conditional on `app.common.openapi.title`) |
 | `com.decoupledx.common.autoconfigure` | Registers all of the above; every bean `@ConditionalOnMissingBean` |
