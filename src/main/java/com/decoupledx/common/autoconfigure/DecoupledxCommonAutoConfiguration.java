@@ -5,14 +5,18 @@ import com.decoupledx.common.config.OpenApiConfig;
 import com.decoupledx.common.error.GlobalExceptionHandler;
 import com.decoupledx.common.event.DomainEventPublisher;
 import com.decoupledx.common.event.SpringDomainEventPublisher;
+import com.decoupledx.common.i18n.Countries;
+import com.decoupledx.common.i18n.WebMessages;
 import com.decoupledx.common.security.JwtDecoderConfig;
 import com.decoupledx.common.security.KeycloakLogoutSuccessHandler;
 import com.decoupledx.common.transaction.SpringTransactionRunner;
 import com.decoupledx.common.transaction.TransactionRunner;
+import com.decoupledx.common.web.Uploads;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -45,5 +49,23 @@ public class DecoupledxCommonAutoConfiguration {
     KeycloakLogoutSuccessHandler keycloakLogoutSuccessHandler(
             @Value("${app.security.end-session-uri}") String endSessionUri) {
         return new KeycloakLogoutSuccessHandler(endSessionUri);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    Uploads uploads(@Value("${app.uploads.dir:uploads}") String uploadDir) {
+        return new Uploads(uploadDir);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    WebMessages webMessages(MessageSource messageSource) {
+        return new WebMessages(messageSource);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    Countries countries() {
+        return new Countries();
     }
 }
